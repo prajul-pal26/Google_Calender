@@ -4,9 +4,11 @@
 .env.production
 .env.development
 
-# Google Service Account credentials
-service_account.json
-*service_account*.json
+# Note: service_account.json is now PUBLIC and should be committed
+# Remove from gitignore for public configuration approach
+# Google Service Account credentials (commented out for public setup)
+# service_account.json
+# *service_account*.json
 
 # Python
 __pycache__/

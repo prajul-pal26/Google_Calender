@@ -121,16 +121,13 @@ configured_calendar_id = None
 def get_service():
     """Get Google Calendar service instance"""
     try:
-        # Use Streamlit secrets for service account info
-        service_account_data = st.secrets["service_account_json"]
-        
-        # Handle both string (with triple quotes) and dict (direct TOML) formats
-        if isinstance(service_account_data, str):
-            service_account_info = json.loads(service_account_data)
+        # Use public configuration file for service account info
+        if os.path.exists("service_account.json"):
+            creds = Credentials.from_service_account_file("service_account.json", scopes=SCOPES)
         else:
-            service_account_info = service_account_data
+            st.error("❌ Service account file not found. Please upload service_account.json")
+            return None
             
-        creds = Credentials.from_service_account_info(service_account_info, scopes=SCOPES)
         service = build("calendar", "v3", credentials=creds)
         return service
     except Exception as e:
@@ -815,13 +812,11 @@ def main():
         
         # Service Account Info
         st.markdown("### 🔑 Service Account")
-        try:
-            # Test if secrets are available
-            json.loads(st.secrets["service_account_json"])
-            st.success("✅ Service account configured via Streamlit secrets")
-        except:
-            st.error("❌ Service account secrets not configured")
-            st.info("Please configure service_account_json in Streamlit Cloud secrets")
+        if os.path.exists("service_account.json"):
+            st.success("✅ Service account file found")
+        else:
+            st.error("❌ Service account file not found")
+            st.info("Upload your service_account.json file to the app directory")
         
         st.markdown("---")
         
