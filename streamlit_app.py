@@ -470,7 +470,15 @@ def get_all_events():
     """Get all events from calendar"""
     global configured_calendar_id
     
-    if not configured_calendar_id:
+    # Debug information
+    st.write(f"Debug: configured_calendar_id = {configured_calendar_id}")
+    st.write(f"Debug: st.session_state.configured = {st.session_state.configured}")
+    st.write(f"Debug: st.session_state.calendar_id = {st.session_state.calendar_id}")
+    
+    # Use session state as fallback
+    calendar_id = configured_calendar_id or (st.session_state.calendar_id if st.session_state.configured else None)
+    
+    if not calendar_id:
         return {"error": "Calendar not configured"}
     
     service = get_service()
@@ -479,7 +487,7 @@ def get_all_events():
     
     try:
         events_result = service.events().list(
-            calendarId=configured_calendar_id,
+            calendarId=calendar_id,
             singleEvents=True,
             orderBy='startTime'
         ).execute()
@@ -510,7 +518,10 @@ def create_new_event(event_name: str, start_datetime: str, end_datetime: str, ti
     """Create a new event"""
     global configured_calendar_id
     
-    if not configured_calendar_id:
+    # Use session state as fallback
+    calendar_id = configured_calendar_id or (st.session_state.calendar_id if st.session_state.configured else None)
+    
+    if not calendar_id:
         return {"error": "Calendar not configured"}
     
     service = get_service()
@@ -525,7 +536,7 @@ def create_new_event(event_name: str, start_datetime: str, end_datetime: str, ti
         }
         
         created_event = service.events().insert(
-            calendarId=configured_calendar_id,
+            calendarId=calendar_id,
             body=event_data
         ).execute()
         
@@ -546,7 +557,10 @@ def delete_event_by_name(event_name: str):
     """Delete events by name"""
     global configured_calendar_id
     
-    if not configured_calendar_id:
+    # Use session state as fallback
+    calendar_id = configured_calendar_id or (st.session_state.calendar_id if st.session_state.configured else None)
+    
+    if not calendar_id:
         return {"error": "Calendar not configured"}
     
     service = get_service()
@@ -555,7 +569,7 @@ def delete_event_by_name(event_name: str):
     
     try:
         events_result = service.events().list(
-            calendarId=configured_calendar_id,
+            calendarId=calendar_id,
             singleEvents=True,
             orderBy='startTime'
         ).execute()
@@ -566,7 +580,7 @@ def delete_event_by_name(event_name: str):
         for event in events:
             if event.get('summary') == event_name:
                 service.events().delete(
-                    calendarId=configured_calendar_id,
+                    calendarId=calendar_id,
                     eventId=event['id']
                 ).execute()
                 deleted_events.append({
@@ -603,6 +617,10 @@ def configure_calendar(gmail: str):
         calendar = service.calendars().get(calendarId=gmail).execute()
         configured_calendar_id = gmail
         
+        # Also update session state
+        st.session_state.configured = True
+        st.session_state.calendar_id = gmail
+        
         return {"message": f"Calendar configured successfully for {gmail}", "calendar_name": calendar.get("summary")}
     except Exception as e:
         return {"error": f"Failed to access calendar {gmail}: {str(e)}"}
@@ -616,6 +634,10 @@ if 'last_action' not in st.session_state:
     st.session_state.last_action = ""
 if 'events_data' not in st.session_state:
     st.session_state.events_data = []
+
+# Sync global configured_calendar_id with session state
+if st.session_state.configured and st.session_state.calendar_id:
+    configured_calendar_id = st.session_state.calendar_id
 
 def show_dashboard():
     """Show main dashboard"""
@@ -836,6 +858,7 @@ def main():
             if st.button("🔄 Reconfigure Calendar"):
                 st.session_state.configured = False
                 st.session_state.calendar_id = ""
+                configured_calendar_id = None  # Also reset global variable
                 st.rerun()
         else:
             st.warning("⚠️ Calendar not configured")
