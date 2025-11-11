@@ -122,7 +122,14 @@ def get_service():
     """Get Google Calendar service instance"""
     try:
         # Use Streamlit secrets for service account info
-        service_account_info = json.loads(st.secrets["service_account_json"])
+        service_account_data = st.secrets["service_account_json"]
+        
+        # Handle both string (with triple quotes) and dict (direct TOML) formats
+        if isinstance(service_account_data, str):
+            service_account_info = json.loads(service_account_data)
+        else:
+            service_account_info = service_account_data
+            
         creds = Credentials.from_service_account_info(service_account_info, scopes=SCOPES)
         service = build("calendar", "v3", credentials=creds)
         return service
