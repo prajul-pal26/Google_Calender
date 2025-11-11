@@ -9,6 +9,10 @@ from typing import Dict, List
 import time
 import os
 import json
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Configuration
 PAGE_CONFIG = {
@@ -111,7 +115,7 @@ from typing import Optional, Dict
 
 # Global variables for Google Calendar
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
-DEFAULT_TIMEZONE = "Asia/Kolkata"
+DEFAULT_TIMEZONE = os.getenv("DEFAULT_TIMEZONE", "Asia/Kolkata")
 
 # In-memory storage for paused events
 paused_events = {}
@@ -121,11 +125,48 @@ configured_calendar_id = None
 def get_service():
     """Get Google Calendar service instance"""
     try:
-        # Use public configuration file for service account info
-        if os.path.exists("service_account.json"):
+        # Try Streamlit secrets first (for production)
+        if "GOOGLE_PRIVATE_KEY" in st.secrets:
+            service_account_info = {
+                "type": st.secrets.get("GOOGLE_SERVICE_TYPE", "service_account"),
+                "project_id": st.secrets["GOOGLE_PROJECT_ID"],
+                "private_key_id": st.secrets["GOOGLE_PRIVATE_KEY_ID"],
+                "private_key": st.secrets["GOOGLE_PRIVATE_KEY"],
+                "client_email": st.secrets["GOOGLE_CLIENT_EMAIL"],
+                "client_id": st.secrets["GOOGLE_CLIENT_ID"],
+                "auth_uri": st.secrets.get("GOOGLE_AUTH_URI", "https://accounts.google.com/o/oauth2/auth"),
+                "token_uri": st.secrets.get("GOOGLE_TOKEN_URI", "https://oauth2.googleapis.com/token"),
+                "auth_provider_x509_cert_url": st.secrets.get("GOOGLE_AUTH_PROVIDER_X509_CERT_URL", "https://www.googleapis.com/oauth2/v1/certs"),
+                "client_x509_cert_url": st.secrets["GOOGLE_CLIENT_X509_CERT_URL"],
+                "universe_domain": st.secrets.get("GOOGLE_UNIVERSE_DOMAIN", "googleapis.com")
+            }
+            creds = Credentials.from_service_account_info(service_account_info, scopes=SCOPES)
+        
+        # Fallback to environment variables (for local development)
+        elif os.getenv("GOOGLE_PRIVATE_KEY"):
+            service_account_info = {
+                "type": os.getenv("GOOGLE_SERVICE_TYPE", "service_account"),
+                "project_id": os.getenv("GOOGLE_PROJECT_ID"),
+                "private_key_id": os.getenv("GOOGLE_PRIVATE_KEY_ID"),
+                "private_key": os.getenv("GOOGLE_PRIVATE_KEY"),
+                "client_email": os.getenv("GOOGLE_CLIENT_EMAIL"),
+                "client_id": os.getenv("GOOGLE_CLIENT_ID"),
+                "auth_uri": os.getenv("GOOGLE_AUTH_URI", "https://accounts.google.com/o/oauth2/auth"),
+                "token_uri": os.getenv("GOOGLE_TOKEN_URI", "https://oauth2.googleapis.com/token"),
+                "auth_provider_x509_cert_url": os.getenv("GOOGLE_AUTH_PROVIDER_X509_CERT_URL", "https://www.googleapis.com/oauth2/v1/certs"),
+                "client_x509_cert_url": os.getenv("GOOGLE_CLIENT_X509_CERT_URL"),
+                "universe_domain": os.getenv("GOOGLE_UNIVERSE_DOMAIN", "googleapis.com")
+            }
+            creds = Credentials.from_service_account_info(service_account_info, scopes=SCOPES)
+        
+        # Fallback to file (legacy support)
+        elif os.path.exists("service_account.json"):
             creds = Credentials.from_service_account_file("service_account.json", scopes=SCOPES)
+        
         else:
-            st.error("❌ Service account file not found. Please upload service_account.json")
+            st.error("❌ No authentication method found. Please configure Streamlit secrets or environment variables.")
+            st.info("For local development: Set up .env file with Google service account variables")
+            st.info("For production: Add secrets to Streamlit Cloud")
             return None
             
         service = build("calendar", "v3", credentials=creds)
@@ -811,12 +852,28 @@ def main():
         st.markdown("---")
         
         # Service Account Info
-        st.markdown("### 🔑 Service Account")
-        if os.path.exists("service_account.json"):
-            st.success("✅ Service account file found")
-        else:
-            st.error("❌ Service account file not found")
-            st.info("Upload your service_account.json file to the app directory")
+        st.markdown("### 🔑 Authentication Status")
+        
+        # Check authentication method
+        auth_method = "None"
+        auth_status = "❌ Not configured"
+        
+        if "GOOGLE_PRIVATE_KEY" in st.secrets:
+            auth_method = "Streamlit Secrets"
+            auth_status = "✅ Configured"
+        elif os.getenv("GOOGLE_PRIVATE_KEY"):
+            auth_method = "Environment Variables"
+            auth_status = "✅ Configured"
+        elif os.path.exists("service_account.json"):
+            auth_method = "File (Legacy)"
+            auth_status = "✅ Configured"
+        
+        st.markdown(f"**Method:** {auth_method}")
+        st.markdown(f"**Status:** {auth_status}")
+        
+        if auth_method == "None":
+            st.warning("⚠️ Please configure authentication")
+            st.info("📖 See setup guide for instructions")
         
         st.markdown("---")
         
