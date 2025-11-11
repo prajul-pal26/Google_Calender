@@ -470,11 +470,6 @@ def get_all_events():
     """Get all events from calendar"""
     global configured_calendar_id
     
-    # Debug information
-    st.write(f"Debug: configured_calendar_id = {configured_calendar_id}")
-    st.write(f"Debug: st.session_state.configured = {st.session_state.configured}")
-    st.write(f"Debug: st.session_state.calendar_id = {st.session_state.calendar_id}")
-    
     # Use session state as fallback
     calendar_id = configured_calendar_id or (st.session_state.calendar_id if st.session_state.configured else None)
     
@@ -808,10 +803,23 @@ def show_event_management():
         if st.session_state.events_data:
             df = pd.DataFrame(st.session_state.events_data)
             
+            # Safe datetime conversion with error handling
+            def safe_format_datetime(date_str):
+                try:
+                    if pd.isna(date_str) or date_str == 'N/A':
+                        return 'N/A'
+                    # Try to parse as datetime
+                    dt = pd.to_datetime(date_str, errors='coerce')
+                    if pd.isna(dt):
+                        return str(date_str)  # Return original if parsing fails
+                    return dt.strftime('%Y-%m-%d %H:%M')
+                except:
+                    return str(date_str)  # Return original as fallback
+            
             if 'start_time' in df.columns:
-                df['start_time'] = pd.to_datetime(df['start_time']).dt.strftime('%Y-%m-%d %H:%M')
+                df['start_time'] = df['start_time'].apply(safe_format_datetime)
             if 'end_time' in df.columns:
-                df['end_time'] = pd.to_datetime(df['end_time']).dt.strftime('%Y-%m-%d %H:%M')
+                df['end_time'] = df['end_time'].apply(safe_format_datetime)
             
             st.dataframe(df, use_container_width=True)
         else:
