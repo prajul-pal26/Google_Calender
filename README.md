@@ -1,366 +1,200 @@
 # 📅 Google Calendar Pause/Resume Manager
 
-A comprehensive Google Calendar management system with intelligent automatic pause/resume functionality, featuring both a FastAPI backend and a beautiful Streamlit web interface for daily use.
+A comprehensive Google Calendar management system with intelligent automatic pause/resume functionality, deployed as a single Streamlit application.
 
 ## 🚀 Quick Start
 
-### Option 1: Easy Launcher (Recommended)
+### **Streamlit Cloud Deployment (Easiest)**
+
+1. **Fork this repository**
+2. **Go to [Streamlit Cloud](https://share.streamlit.io/)**
+3. **Connect your GitHub account**
+4. **Select this repository**
+5. **Deploy!**
+
+That's it! Your app will be live at `https://your-app.streamlit.app`
+
+### **Local Development**
+
 ```bash
 # Install dependencies
 pip install -r requirements.txt
 
-# Start both API server and web interface
-python start.py
-```
-
-Then open http://localhost:8501 in your browser!
-
-### Option 2: Manual Start
-```bash
-# Terminal 1: Start API server
-python app.py
-
-# Terminal 2: Start web interface
+# Run the app
 streamlit run streamlit_app.py
 ```
 
-## 🎨 Features
+## 🎯 Features
 
-### 🌟 **Beautiful Web Interface**
-- **Modern Streamlit UI** with responsive design
-- **Real-time dashboard** with live status updates
-- **One-click pause/resume** for current events
-- **Visual analytics** with charts and timelines
-- **Mobile-friendly** interface
+### **Smart Pause/Resume**
+- **⏸️ One-Click Pause** - Pause current ongoing event instantly
+- **▶️ One-Click Resume** - Resume last paused event automatically
+- **🤖 Intelligent Time Management** - Automatically extends events for breaks
+- **🔄 Conflict Resolution** - Finds next available slot when needed
 
-### 🧠 **Smart Time Management**
-- **Automatic pause** of current ongoing event (no event name needed)
-- **Automatic resume** of last paused event (no event name needed)
-- **Intelligent time extension** for breaks
-- **Conflict resolution** with next available slot finding
-- **Auto-reschedule** for abandoned paused events
+### **Beautiful Interface**
+- **📊 Real-time Dashboard** - Live status updates
+- **📈 Event Management** - Create, view, delete events
+- **🎨 Modern Design** - Gradient cards and smooth animations
+- **📱 Mobile Responsive** - Works on all devices
 
-### 📊 **Analytics & Insights**
-- **Event timeline visualization**
-- **Status distribution charts**
-- **Completed/missed/rescheduled tracking**
-- **Pause duration analytics**
-- **Productivity insights**
+### **Advanced Features**
+- **⏰ Auto-Reschedule** - Handles forgotten paused events
+- **🏷️ Smart Labels** - [COMPLETED], [MISSED], [RESCHEDULED]
+- **📊 Analytics** - Track your time usage patterns
+- **🔐 Secure** - Uses Google service account authentication
 
-### ⚙️ **Advanced Features**
+## 📋 Setup
+
+### **1. Google Calendar Setup**
+
+1. **Go to [Google Cloud Console](https://console.cloud.google.com/)**
+2. **Create a new project**
+3. **Enable Google Calendar API**
+4. **Create Service Account**
+5. **Download service account JSON file**
+6. **Rename it to `service_account.json`**
+7. **Share your Google Calendar with the service account email**
+
+### **2. Environment Variables (Optional)**
+
+Create a `.env` file:
+```bash
+SERVICE_ACCOUNT_FILE=service_account.json
+SCOPES=https://www.googleapis.com/auth/calendar
+DEFAULT_TIMEZONE=Asia/Kolkata
+```
+
+### **3. Deploy to Streamlit Cloud**
+
+1. **Upload `service_account.json` to your app secrets**
+2. **Set environment variables in Streamlit Cloud**
+3. **Deploy your app**
+
+## 🎮 Daily Use
+
+### **For Study Sessions**
+1. **Create** your study events in advance
+2. **Pause** when you need a break (⏸️ button)
+3. **Resume** when you're back (▶️ button)
+4. **System** automatically adjusts your study time
+
+### **For Work Meetings**
+1. **Schedule** your meetings
+2. **Use pause/resume** as needed during meetings
+3. **Let the system** handle time adjustments
+
+### **For Flexible Scheduling**
+1. **Plan** your day with events
+2. **Adapt** using pause/resume for interruptions
+3. **Trust** the automatic time management
+
+## 🛠️ Technical Details
+
+### **Architecture**
+- **Single File Application** - Everything in `streamlit_app.py`
+- **Google Calendar API** - Direct integration
+- **In-Memory Storage** - Fast and responsive
+- **No External Dependencies** - Self-contained
+
+### **Key Functions**
+- `pause_current_event()` - Pauses ongoing event
+- `resume_last_event()` - Resumes paused event
+- `auto_reschedule_abandoned_events()` - Handles forgotten pauses
+- `find_available_slot()` - Conflict resolution
+- `create_new_event()` - Event creation
+- `get_all_events()` - Event listing
+
+### **Smart Features**
 - **30-minute auto-reschedule** after original end time
 - **2-hour fallback** for very long pauses
-- **Smart event labeling** ([COMPLETED], [MISSED], [RESCHEDULED])
-- **Configurable timeouts** and settings
-- **RESTful API** for custom integrations
+- **Time zone handling** - Global compatibility
+- **Error handling** - User-friendly messages
 
-## Setup
+## 🔧 Configuration
 
-1. Install dependencies:
-```bash
-pip install -r requirements.txt
+### **Service Account Setup**
+1. **Enable Google Calendar API** in Google Cloud Console
+2. **Create Service Account** with Calendar permissions
+3. **Download JSON credentials**
+4. **Share calendar** with service account email
+5. **Upload to Streamlit secrets**
+
+### **Streamlit Secrets**
+```toml
+# In Streamlit Cloud > Settings > Secrets
+SERVICE_ACCOUNT_FILE = "your-service-account-content"
+SCOPES = "https://www.googleapis.com/auth/calendar"
+DEFAULT_TIMEZONE = "Asia/Kolkata"
 ```
 
-2. Make sure you have your `service_account.json` file in the same directory.
+## 📱 Mobile Usage
 
-3. Run the server:
-```bash
-python app.py
+The app works perfectly on mobile:
+- **Touch-friendly buttons**
+- **Responsive layout**
+- **Mobile navigation**
+- **Quick access to pause/resume**
+
+## 🎨 UI Features
+
+- **Gradient Cards** - Beautiful status indicators
+- **Real-time Updates** - Live feedback
+- **Progress Indicators** - Visual time tracking
+- **Expandable Sections** - Detailed information
+- **Smooth Animations** - Modern interactions
+
+## 🔍 Troubleshooting
+
+### **Common Issues**
+
+1. **"Calendar not configured"**
+   - Enter your Gmail address in the sidebar
+   - Make sure service account has access
+
+2. **"Failed to connect to Google Calendar"**
+   - Check service account file
+   - Verify API is enabled
+   - Check calendar sharing permissions
+
+3. **"No ongoing event found"**
+   - Make sure you have events scheduled
+   - Check event timing
+   - Verify timezone settings
+
+### **Debug Mode**
+Add this to your app for debugging:
+```python
+import logging
+logging.basicConfig(level=logging.DEBUG)
 ```
 
-The server will start on `http://localhost:8000`
+## 🚀 Deployment Options
 
-## API Endpoints
+### **Streamlit Cloud (Recommended)**
+- **Easiest deployment**
+- **Free tier available**
+- **Automatic HTTPS**
+- **Built-in secrets management**
 
-### 1. Configure Calendar
-**POST** `/configure-calendar`
+### **Other Platforms**
+- **Heroku**
+- **Railway**
+- **PythonAnywhere**
+- **Your own server**
 
-Configure the Gmail calendar ID to use for creating events.
+## 📞 Support
 
-**Request Body:**
-```json
-{
-    "gmail": "your-email@gmail.com"
-}
-```
+For issues:
+1. **Check the troubleshooting section**
+2. **Verify your Google Calendar setup**
+3. **Ensure service account permissions**
+4. **Test with a simple event first**
 
-**Response:**
-```json
-{
-    "message": "Calendar configured successfully for your-email@gmail.com",
-    "calendar_name": "Your Calendar Name"
-}
-```
+## 🎉 Enjoy!
 
-### 2. Create Event
-**POST** `/create-event`
+Focus on your work and study while the system handles all the time management complexity automatically! 🚀
 
-Create an event in the configured calendar.
+---
 
-**Request Body:**
-```json
-{
-    "event_name": "Meeting with Team",
-    "start_datetime": "2025-11-13T20:00:00",
-    "end_datetime": "2025-11-13T20:30:00",
-    "timezone": "Asia/Kolkata"
-}
-```
-
-**Response:**
-```json
-{
-    "message": "Event created successfully",
-    "event_id": "event-id-here",
-    "event_link": "https://calendar.google.com/calendar/event/...",
-    "event_name": "Meeting with Team",
-    "start_time": "2025-11-13T20:00:00",
-    "end_time": "2025-11-13T20:30:00"
-}
-```
-
-### 3. Root Endpoint
-**GET** `/`
-
-Get server status and currently configured calendar.
-
-**Response:**
-```json
-{
-    "message": "Google Calendar API Server",
-    "configured_calendar": "your-email@gmail.com"
-}
-```
-
-### 4. Pause Event (Automatic)
-**POST** `/pause-event`
-
-Automatically pause the currently ongoing event based on current time. No event name needed - it finds and pauses whatever event is happening right now.
-
-**Request Body:**
-```json
-{}
-```
-
-**Response:**
-```json
-{
-    "message": "Event 'Study Session' paused successfully",
-    "event_name": "Study Session",
-    "event_id": "current-event-id",
-    "paused_at": "2025-11-11T17:30:00",
-    "remaining_duration": "1:30:00",
-    "completed_event_id": "completed-event-id",
-    "original_end_time": "2025-11-11T19:00:00"
-}
-```
-
-### 5. Resume Event (Automatic)
-**POST** `/resume-event`
-
-Automatically resume the most recently paused event. No event name needed - it resumes the last paused event.
-
-**Request Body:**
-```json
-{}
-```
-
-**Response:**
-```json
-{
-    "message": "Event 'Study Session' resumed successfully",
-    "event_name": "Study Session",
-    "resumed_at": "2025-11-11T17:35:00",
-    "ends_at": "2025-11-11T19:05:00",
-    "duration": "1:30:00",
-    "pause_duration": "0:05:00",
-    "event_id": "resumed-event-id",
-    "event_link": "https://calendar.google.com/calendar/event/...",
-    "rescheduled": false
-}
-```
-
-### 6. Get Paused Events
-**GET** `/paused-events`
-
-Get all currently paused events with detailed information.
-
-**Response:**
-```json
-{
-    "message": "Found 1 paused events",
-    "paused_events": [
-        {
-            "event_id": "event-id-here",
-            "event_name": "Study Session",
-            "paused_at": "2025-11-11T17:30:00",
-            "remaining_duration": "1:30:00",
-            "original_end_time": "2025-11-11T19:00:00",
-            "is_last_paused": true
-        }
-    ],
-    "last_paused_event_id": "event-id-here"
-}
-```
-
-### 7. Get All Events
-**GET** `/events`
-
-Get all event names from the configured calendar.
-
-**Response:**
-```json
-{
-    "message": "Found 5 events in calendar",
-    "total_events": 5,
-    "events": [
-        {
-            "event_id": "event-id-1",
-            "event_name": "Meeting with Team",
-            "start_time": "2025-11-13T20:00:00",
-            "end_time": "2025-11-13T20:30:00",
-            "status": "confirmed"
-        }
-    ]
-}
-```
-
-### 8. Delete Event
-**DELETE** `/delete-event`
-
-Delete an event by event name from the configured calendar.
-
-**Request Body:**
-```json
-{
-    "event_name": "TEST"
-}
-```
-
-## Automatic Pause/Resume Workflow
-
-The pause/resume system provides intelligent event management based on current time:
-
-### How It Works:
-
-1. **Automatic Pause**: When you hit pause:
-   - The system automatically finds whatever event is happening RIGHT NOW
-   - The completed portion is saved as a separate event with "[COMPLETED]" prefix
-   - The original event is deleted
-   - Remaining time is tracked and stored
-
-2. **Automatic Resume**: When you hit resume:
-   - The system resumes the LAST paused event automatically
-   - It tries to resume immediately (current time)
-   - If the current time slot is occupied, it finds the next available slot
-   - The event duration includes the original remaining time
-
-3. **Smart Time Management**:
-   - If you take a 1-hour break, the event automatically extends by 1 hour
-   - If the extended time conflicts with other events, it finds the next available slot
-   - All time calculations are done automatically
-
-4. **Corner Case Handling**:
-   - If you pause but never resume, the system auto-reschedules after 2 hours
-   - Abandoned events are marked as "[RESCHEDULED]" and placed in available slots
-   - No manual intervention needed for abandoned pauses
-
-### Key Features:
-
-- **No Event Names Needed**: The system works based on current time, not event names
-- **Always Current**: Pause always affects the event happening right now
-- **Smart Rescheduling**: Automatically finds available slots when there are conflicts
-- **Time Tracking**: Accurately tracks completed vs remaining time
-- **Abandoned Event Recovery**: Auto-reschedules events left paused too long
-
-## 🎯 Daily Use Workflow
-
-### **Using the Web Interface (Recommended)**
-
-1. **Start the Application**: `python start.py`
-2. **Open Browser**: Go to http://localhost:8501
-3. **Configure Calendar**: Enter your Gmail address
-4. **Create Events**: Plan your study/work sessions
-5. **Use Pause/Resume**:
-   - Click **⏸️ Pause** when you need a break
-   - Click **▶️ Resume** when you're back
-6. **View Analytics**: Check your time usage patterns
-
-### **Using the API**
-
-1. First, configure the calendar:
-```bash
-curl -X POST "http://localhost:8000/configure-calendar" \
-     -H "Content-Type: application/json" \
-     -d '{"gmail": "cotgen00@gmail.com"}'
-```
-
-2. Then create an event:
-```bash
-curl -X POST "http://localhost:8000/create-event" \
-     -H "Content-Type: application/json" \
-     -d '{
-           "event_name": "Team Meeting",
-           "start_datetime": "2025-11-13T20:00:00",
-           "end_datetime": "2025-11-13T20:30:00",
-           "timezone": "Asia/Kolkata"
-         }'
-```
-
-3. Pause current event (no event name needed):
-```bash
-curl -X POST "http://localhost:8000/pause-event" \
-     -H "Content-Type: application/json" \
-     -d '{}'
-```
-
-4. Resume last paused event (no event name needed):
-```bash
-curl -X POST "http://localhost:8000/resume-event" \
-     -H "Content-Type: application/json" \
-     -d '{}'
-```
-
-## Testing
-
-### Basic API Test
-Run the basic test script to verify the API endpoints:
-```bash
-python test_api.py
-```
-
-### Pause/Resume Workflow Test
-Run the pause/resume test script to test the complete workflow:
-```bash
-python test_pause_resume.py
-```
-
-This test will:
-1. Configure the calendar
-2. Create a test event
-3. Pause the event (simulating taking a break)
-4. Check paused events
-5. Resume the event (with automatic time adjustment)
-6. Verify the event is properly rescheduled
-
-## Notes
-
-- The server uses service account authentication, so make sure your service account has access to the target Google Calendar
-- Datetime format should be ISO 8601 (e.g., "2025-11-13T20:00:00")
-- Default timezone is "Asia/Kolkata" but can be specified in the create event request
-- Paused events are stored in memory (will be lost if server restarts)
-- Completed portions are saved as separate events with "[COMPLETED]" prefix
-- The system automatically handles time conflicts by finding the next available slot
-- All time calculations are done in UTC to avoid timezone issues
-
-## Advanced Features
-
-### Smart Time Management
-- **Automatic Extension**: When you resume after a break, the event automatically extends by the break duration
-- **Conflict Resolution**: If the extended time conflicts with other events, the system finds the next available slot
-- **Completed Tracking**: All completed portions are tracked as separate events for accurate time logging
-
-### Event State Management
-- **Pause State**: Events can be paused and resumed with full state preservation
-- **Duration Tracking**: Remaining duration is accurately calculated and preserved
-- **Time Zone Handling**: All time operations are handled in UTC with proper timezone conversion
+**Made with ❤️ using Streamlit and Google Calendar API**
