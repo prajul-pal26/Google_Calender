@@ -1,6 +1,58 @@
-# Google Calendar FastAPI Server with Automatic Pause/Resume Functionality
+# 📅 Google Calendar Pause/Resume Manager
 
-A FastAPI server that provides endpoints to interact with Google Calendar API using service account authentication, with intelligent automatic pause/resume functionality for ongoing events based on current time.
+A comprehensive Google Calendar management system with intelligent automatic pause/resume functionality, featuring both a FastAPI backend and a beautiful Streamlit web interface for daily use.
+
+## 🚀 Quick Start
+
+### Option 1: Easy Launcher (Recommended)
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Start both API server and web interface
+python start.py
+```
+
+Then open http://localhost:8501 in your browser!
+
+### Option 2: Manual Start
+```bash
+# Terminal 1: Start API server
+python app.py
+
+# Terminal 2: Start web interface
+streamlit run streamlit_app.py
+```
+
+## 🎨 Features
+
+### 🌟 **Beautiful Web Interface**
+- **Modern Streamlit UI** with responsive design
+- **Real-time dashboard** with live status updates
+- **One-click pause/resume** for current events
+- **Visual analytics** with charts and timelines
+- **Mobile-friendly** interface
+
+### 🧠 **Smart Time Management**
+- **Automatic pause** of current ongoing event (no event name needed)
+- **Automatic resume** of last paused event (no event name needed)
+- **Intelligent time extension** for breaks
+- **Conflict resolution** with next available slot finding
+- **Auto-reschedule** for abandoned paused events
+
+### 📊 **Analytics & Insights**
+- **Event timeline visualization**
+- **Status distribution charts**
+- **Completed/missed/rescheduled tracking**
+- **Pause duration analytics**
+- **Productivity insights**
+
+### ⚙️ **Advanced Features**
+- **30-minute auto-reschedule** after original end time
+- **2-hour fallback** for very long pauses
+- **Smart event labeling** ([COMPLETED], [MISSED], [RESCHEDULED])
+- **Configurable timeouts** and settings
+- **RESTful API** for custom integrations
 
 ## Setup
 
@@ -221,7 +273,20 @@ The pause/resume system provides intelligent event management based on current t
 - **Time Tracking**: Accurately tracks completed vs remaining time
 - **Abandoned Event Recovery**: Auto-reschedules events left paused too long
 
-## Usage Example
+## 🎯 Daily Use Workflow
+
+### **Using the Web Interface (Recommended)**
+
+1. **Start the Application**: `python start.py`
+2. **Open Browser**: Go to http://localhost:8501
+3. **Configure Calendar**: Enter your Gmail address
+4. **Create Events**: Plan your study/work sessions
+5. **Use Pause/Resume**:
+   - Click **⏸️ Pause** when you need a break
+   - Click **▶️ Resume** when you're back
+6. **View Analytics**: Check your time usage patterns
+
+### **Using the API**
 
 1. First, configure the calendar:
 ```bash
@@ -240,6 +305,20 @@ curl -X POST "http://localhost:8000/create-event" \
            "end_datetime": "2025-11-13T20:30:00",
            "timezone": "Asia/Kolkata"
          }'
+```
+
+3. Pause current event (no event name needed):
+```bash
+curl -X POST "http://localhost:8000/pause-event" \
+     -H "Content-Type: application/json" \
+     -d '{}'
+```
+
+4. Resume last paused event (no event name needed):
+```bash
+curl -X POST "http://localhost:8000/resume-event" \
+     -H "Content-Type: application/json" \
+     -d '{}'
 ```
 
 ## Testing
